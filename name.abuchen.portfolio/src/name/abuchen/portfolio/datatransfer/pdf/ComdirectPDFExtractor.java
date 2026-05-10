@@ -1021,6 +1021,21 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
 
                         .oneOf( //
                                         // @formatter:off
+                                        // Stk. 65 VANECK MSTR.DM DIV.UC.ETF , WKN / ISIN: A2JAHJ / NL0011683594
+                                        // Zu Ihren Lasten vor Steuern: EUR -3.402,65
+                                        // @formatter:on
+                                        section -> section //
+                                                        .attributes("name", "wkn", "isin", "currency") //
+                                                        .match("^Stk\\.[\\-\\s]{1,}[\\.,\\d]+ (?<name>.*), WKN \\/ ISIN: (?<wkn>[A-Z0-9]{6})[\\s]{1,}\\/[\\s]{1,}(?<isin>[A-Z]{2}[A-Z0-9]{9}[0-9]).*$") //
+                                                        .match("^Zu Ihren (Gunst|Last)en vor Steuern:[\\s]{1,}(?<currency>[A-Z]{3})[\\s]{1,}.*$") //
+                                                        .assign((t, v) -> {
+                                                            v.put("currency", stripBlanks(v.get("currency")));
+                                                            v.put("name", trim(v.get("name")));
+
+                                                            t.setSecurity(getOrCreateSecurity(v));
+                                                        }),
+
+                                        // @formatter:off
                                         // Stk.             400 IQIYI INC. ADR  DL-,00001 , WKN / ISIN: A2JGN8  / US46267X1081
                                         //  Zu  Ih r e n G u n s t e n v o r S te u e r n :                                                        E  U   R                         9  .  1   1  0 , 3 5  U S D          1  0.  86 1 , 3  6
                                         // @formatter:on
